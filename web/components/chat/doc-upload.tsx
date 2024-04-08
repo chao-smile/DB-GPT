@@ -24,7 +24,7 @@ export default function DocUpload(props: IProps) {
     formData.append('doc_file', data.file);
     formData.append('doc_type', 'DOCUMENT');
 
-    const res = await apiInterceptors(uploadDocument(dbParam || 'default', formData));
+    const res = await apiInterceptors(uploadDocument(dbParam?.name || 'default', formData));
 
     if (!res[1]) {
       setLoading(false);

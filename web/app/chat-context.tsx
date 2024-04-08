@@ -4,6 +4,7 @@ import { useRequest } from 'ahooks';
 import { ChatHistoryResponse, DialogueListResponse, IChatDialogueSchema } from '@/types/chat';
 import { useSearchParams } from 'next/navigation';
 import { STORAGE_THEME_KEY } from '@/utils';
+import qs from 'query-string';
 
 type ThemeMode = 'dark' | 'light';
 
@@ -14,7 +15,7 @@ interface IChatContext {
   scene: IChatDialogueSchema['chat_mode'] | (string & {});
   chatId: string;
   model: string;
-  dbParam?: string;
+  dbParam?: DBParam;
   modelList: Array<string>;
   agent: string;
   dialogueList?: DialogueListResponse;
@@ -23,7 +24,7 @@ interface IChatContext {
   setModel: (val: string) => void;
   setIsContract: (val: boolean) => void;
   setIsMenuExpand: (val: boolean) => void;
-  setDbParam: (val: string) => void;
+  setDbParam: (val: DBParam) => void;
   queryDialogueList: () => void;
   refreshDialogList: () => void;
   currentDialogue?: DialogueListResponse[0];
@@ -45,7 +46,7 @@ const ChatContext = createContext<IChatContext>({
   chatId: '',
   modelList: [],
   model: '',
-  dbParam: undefined,
+  dbParam: {},
   dialogueList: [],
   agent: '',
   setAgent: () => {},
@@ -62,16 +63,21 @@ const ChatContext = createContext<IChatContext>({
   setDocId: () => {},
 });
 
+export type DBParam = {
+  name?: string;
+  id?: number;
+};
+
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {
   const searchParams = useSearchParams();
   const chatId = searchParams?.get('id') ?? '';
   const scene = searchParams?.get('scene') ?? '';
-  const db_param = searchParams?.get('db_param') ?? '';
+  const db_param: DBParam = qs.parse(decodeURIComponent(searchParams?.get('db_param') ?? ''), { parseNumbers: true });
 
   const [isContract, setIsContract] = useState(false);
   const [model, setModel] = useState<string>('');
   const [isMenuExpand, setIsMenuExpand] = useState<boolean>(scene !== 'chat_dashboard');
-  const [dbParam, setDbParam] = useState<string>(db_param);
+  const [dbParam, setDbParam] = useState<DBParam>(db_param);
   const [agent, setAgent] = useState<string>('');
   const [history, setHistory] = useState<ChatHistoryResponse>([]);
   const [docId, setDocId] = useState<number>();

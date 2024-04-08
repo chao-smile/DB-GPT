@@ -8,6 +8,7 @@ import moment from 'moment';
 import { apiInterceptors, delSpace, newDialogue } from '@/client/api';
 import { useTranslation } from 'react-i18next';
 import GptCard from '../common/gpt-card';
+import qs from 'query-string';
 
 interface IProps {
   space: ISpace;
@@ -48,7 +49,7 @@ export default function SpaceCard(props: IProps) {
       }),
     );
     if (data?.conv_uid) {
-      router.push(`/chat?scene=chat_knowledge&id=${data?.conv_uid}&db_param=${space.name}`);
+      router.push(`/chat?scene=chat_knowledge&id=${data?.conv_uid}&db_param=${encodeURIComponent(qs.stringify({ name: space.name, id: space.id }))}`);
     }
   };
 

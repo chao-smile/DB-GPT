@@ -6,6 +6,7 @@ import { useAsyncEffect } from 'ahooks';
 import { Select } from 'antd';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import DBIcon from '@/components/common/db-icon';
+import qs from 'query-string';
 
 function DBSelector() {
   const { scene, dbParam, setDbParam } = useContext(ChatContext);
@@ -19,15 +20,15 @@ function DBSelector() {
 
   const dbOpts = useMemo(
     () =>
-      dbs.map?.((db: IDB) => {
-        return { name: db.param, ...dbMapper[db.type] };
+      dbs.map?.((db: IDB & { id?: number }) => {
+        return { name: db.param, ...dbMapper[db.type], id: db.id };
       }),
     [dbs],
   );
 
   useEffect(() => {
-    if (dbOpts?.length && !dbParam) {
-      setDbParam(dbOpts[0].name);
+    if (dbOpts?.length && !dbParam?.id) {
+      setDbParam({ name: dbOpts[0].name, id: dbOpts[0].id });
     }
   }, [dbOpts, setDbParam, dbParam]);
 
@@ -35,14 +36,14 @@ function DBSelector() {
 
   return (
     <Select
-      value={dbParam}
+      value={qs.stringify(dbParam ?? {})}
       className="w-36"
       onChange={(val) => {
-        setDbParam(val);
+        setDbParam(qs.parse(val, { parseNumbers: true }));
       }}
     >
       {dbOpts.map((item) => (
-        <Select.Option key={item.name}>
+        <Select.Option key={qs.stringify({ name: item.name, id: item.id })}>
           <DBIcon width={24} height={24} src={item.icon} label={item.label} className="w-[1.5em] h-[1.5em] mr-1 inline-block mt-[-4px]" />
           {item.name}
         </Select.Option>

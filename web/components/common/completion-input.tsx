@@ -26,14 +26,14 @@ function CompletionInput({ children, loading, onSubmit, handleFinish, ...props }
 
   useEffect(() => {
     showUpload && fetchDocuments();
-  }, [dbParam]);
+  }, [dbParam?.name]);
 
   async function fetchDocuments() {
-    if (!dbParam) {
+    if (!dbParam?.name) {
       return null;
     }
     const [_, data] = await apiInterceptors(
-      getDocumentList(dbParam, {
+      getDocumentList(dbParam.name, {
         page: 1,
         page_size: uploadCountRef.current,
       }),
@@ -48,7 +48,7 @@ function CompletionInput({ children, loading, onSubmit, handleFinish, ...props }
 
   return (
     <div className="flex-1 relative">
-      <DocList documents={documents} dbParam={dbParam} />
+      <DocList documents={documents} dbParam={dbParam?.name} />
       {showUpload && <DocUpload handleFinish={handleFinish} onUploadFinish={onUploadFinish} className="absolute z-10 top-2 left-2" />}
       <Input.TextArea
         className={`flex-1 ${showUpload ? 'pl-10' : ''} pr-10`}

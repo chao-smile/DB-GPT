@@ -52,11 +52,11 @@ const Completion = ({ messages, onSubmit }: Props) => {
       case 'chat_agent':
         return agent;
       case 'chat_excel':
-        return currentDialogue?.select_param;
+        return currentDialogue?.select_param || '';
       case 'chat_flow':
         return flowSelectParam;
       default:
-        return spaceNameOriginal || dbParam;
+        return spaceNameOriginal || dbParam?.name || '';
     }
   }, [scene, agent, currentDialogue, dbParam, spaceNameOriginal, flowSelectParam]);
 
@@ -68,10 +68,12 @@ const Completion = ({ messages, onSubmit }: Props) => {
     }
     try {
       setIsLoading(true);
-      await onSubmit(content, {
-        select_param: selectParam ?? '',
-        // incremental,
-      });
+      const submitParam = new Map();
+      submitParam.set('select_param', selectParam);
+      if (selectParam === dbParam?.name) {
+        submitParam.set('select_param_id', dbParam?.id);
+      }
+      await onSubmit(content, submitParam);
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +183,7 @@ const Completion = ({ messages, onSubmit }: Props) => {
                           select_param={select_param}
                           conv_index={Math.ceil((index + 1) / 2)}
                           question={showMessages?.filter((e) => e?.role === 'human' && e?.order === content.order)[0]?.context}
-                          knowledge_space={spaceNameOriginal || dbParam || ''}
+                          knowledge_space={spaceNameOriginal || dbParam?.name || ''}
                         />
                         <Tooltip title={t('Copy')}>
                           <Button
