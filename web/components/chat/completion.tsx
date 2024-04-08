@@ -26,6 +26,11 @@ type Props = {
   onSubmit: (message: string, otherQueryBody?: Record<string, any>) => Promise<void>;
 };
 
+type SubmitParam = {
+  select_param: string;
+  select_param_id?: number | string;
+};
+
 const Completion = ({ messages, onSubmit }: Props) => {
   const { dbParam, currentDialogue, scene, model, refreshDialogList, chatId, agent, docId } = useContext(ChatContext);
   const { t } = useTranslation();
@@ -68,10 +73,9 @@ const Completion = ({ messages, onSubmit }: Props) => {
     }
     try {
       setIsLoading(true);
-      const submitParam = new Map();
-      submitParam.set('select_param', selectParam);
+      let submitParam: SubmitParam = { select_param: selectParam };
       if (selectParam === dbParam?.name) {
-        submitParam.set('select_param_id', dbParam?.id);
+        submitParam.select_param_id = dbParam?.id;
       }
       await onSubmit(content, submitParam);
     } finally {

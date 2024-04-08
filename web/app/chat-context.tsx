@@ -65,7 +65,7 @@ const ChatContext = createContext<IChatContext>({
 
 export type DBParam = {
   name?: string;
-  id?: number;
+  id?: number | string;
 };
 
 const ChatContextProvider = ({ children }: { children: React.ReactElement }) => {

@@ -10,6 +10,7 @@ export interface ISpace {
   name: string;
   owner: string;
   vector_type: string;
+  name_id?: string;
 }
 export type AddKnowledgeParams = {
   name: string;
